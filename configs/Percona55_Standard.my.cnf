@@ -1,0 +1,81 @@
+##
+## /etc/mysql/my.cnf
+##
+## TARGET HOST          ANY
+## TARGET VERSION       Percona Server 5.5
+##
+
+[mysqld]
+port                    = 3306
+user                    = mysql
+socket                  = /var/run/mysqld/mysqld.sock
+pid-file                = /var/run/mysqld/mysqld.pid
+datadir                 = /home/database/data
+
+log_error               = /var/log/mysql/mysql-err.log
+
+skip-name-resolve
+default-storage-engine = InnoDB
+userstat                = ON
+max_connect_errors      = 4294967295
+open-files-limit        = 65535
+
+query_cache_size                = 64M
+query_cache_min_res_unit        = 32K
+query_cache_limit               = 16M
+
+table_open_cache        = 160
+table_definition_cache  = 10000
+
+thread_cache_size       = 500
+
+max_connections         = 10
+
+wait_timeout            = 300
+interactive_timeout     = 600
+
+## MyISAM settings
+tmp_table_size = 32M
+max_heap_table_size = 32M
+key_buffer_size = 128M
+ft_min_word_len = 2
+
+
+## Innodb settings
+## Innodb settings - data files
+
+innodb_data_home_dir                    = /home/database/InnoDB
+innodb_data_file_path                   = InnoDB01:10M:autoextend
+innodb_file_per_table                   = 1
+
+### Innodb settings - storage engine
+innodb_log_file_size                    = 64M
+innodb_log_buffer_size                  = 32M
+innodb_lock_wait_timeout                = 120
+
+# Flush logs every second - could result in data loss of up to a second in the event of a server crash
+# but innodb data should remain reliable
+innodb_flush_log_at_trx_commit          = 2
+
+innodb_flush_method                     = O_DIRECT
+
+## Innodb settings - Archive Logs
+## This will require creation of directory /home/database/innodb-logs
+## Archive logs are binary transaction logs, not human readable error logs
+innodb_log_group_home_dir       = /home/database/InnoDB-logs
+
+## Don't change the following parameter - Innodb needs at least 2 so that it can rotate files
+innodb_log_files_in_group       = 2
+
+# Opening as much memory as possible without causing server alarm
+innodb_buffer_pool_size         = 128M
+
+max_allowed_packet     = 10M
+
+[mysql]
+no-auto-rehash
+
+# The following options will be passed to all MySQL clients
+[client]
+port                    = 3306
+socket                  = /var/run/mysqld/mysqld.sock
